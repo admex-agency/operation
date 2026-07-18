@@ -1,1 +1,513 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Operation Hub phối hợp vận hành giữa Green SM Ads và Admicro cho toàn bộ hợp đồng quảng cáo năm 2026." />
+  <title>Green SM Ads × Admicro — Operation Hub 2026</title>
+  <style>
+    :root {
+      --bg: #f4f7f8;
+      --surface: rgba(255,255,255,.88);
+      --surface-solid: #ffffff;
+      --ink: #0f1720;
+      --muted: #66727d;
+      --line: #dce4e8;
+      --green: #00a88f;
+      --green-dark: #087f72;
+      --cyan: #22b8cf;
+      --yellow: #f5c542;
+      --navy: #193b63;
+      --danger: #b42318;
+      --shadow: 0 18px 50px rgba(15, 23, 32, .08);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 11px;
+      --max: 1440px;
+    }
 
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(34,184,207,.12), transparent 28%),
+        radial-gradient(circle at 95% 8%, rgba(245,197,66,.12), transparent 24%),
+        var(--bg);
+      line-height: 1.5;
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+
+    .app-shell { min-height: 100vh; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      backdrop-filter: blur(18px);
+      background: rgba(244,247,248,.78);
+      border-bottom: 1px solid rgba(220,228,232,.85);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      min-height: 74px;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand-lockup { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .brand-mark {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--cyan), var(--green) 56%, var(--yellow));
+      position: relative; box-shadow: inset 0 0 0 1px rgba(255,255,255,.55), 0 8px 24px rgba(0,168,143,.2);
+      flex: 0 0 auto;
+    }
+    .brand-mark::before {
+      content: ""; position: absolute; width: 21px; height: 10px; border-left: 4px solid white; border-bottom: 4px solid white;
+      transform: rotate(-45deg); left: 11px; top: 13px; border-radius: 2px;
+    }
+    .brand-text { min-width: 0; }
+    .brand-title { font-size: 15px; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; }
+    .brand-sub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .status-pill, .icon-btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.8);
+      border-radius: 999px;
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      color: var(--ink);
+    }
+    .status-pill { font-size: 13px; font-weight: 700; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(0,168,143,.12); }
+    .icon-btn { cursor: pointer; width: 40px; justify-content: center; padding: 0; display: none; }
+
+    .layout {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 260px minmax(0,1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 102px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(220,228,232,.9);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+
+    .side-label { font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; padding: 8px 10px; }
+    .side-nav { display: grid; gap: 4px; }
+    .side-nav a {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #46535e;
+      font-size: 14px;
+      font-weight: 650;
+      transition: .2s ease;
+    }
+    .side-nav a:hover, .side-nav a.active { background: #ecf8f6; color: var(--green-dark); }
+    .nav-num { width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; background: #edf1f3; font-size: 11px; font-weight: 800; }
+    .side-nav a.active .nav-num { background: var(--green); color: white; }
+
+    .sidebar-note {
+      margin-top: 14px;
+      border-radius: 14px;
+      padding: 14px;
+      background: linear-gradient(135deg, #163a60, #0d6d72);
+      color: white;
+    }
+    .sidebar-note strong { display: block; font-size: 13px; }
+    .sidebar-note span { display: block; margin-top: 4px; font-size: 12px; opacity: .78; }
+
+    main { min-width: 0; }
+    section { scroll-margin-top: 100px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 340px;
+      border-radius: 30px;
+      padding: 44px;
+      background: linear-gradient(135deg, #082f3e 0%, #0a5c65 52%, #0aa58f 100%);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; }
+    .hero::before { width: 420px; height: 420px; right: -160px; top: -170px; border: 1px solid rgba(255,255,255,.18); box-shadow: 0 0 0 60px rgba(255,255,255,.035), 0 0 0 120px rgba(255,255,255,.025); }
+    .hero::after { width: 220px; height: 220px; left: 55%; bottom: -160px; background: rgba(245,197,66,.17); filter: blur(10px); }
+    .eyebrow { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #bff4ec; }
+    .hero h1 { position: relative; z-index: 1; max-width: 820px; margin: 18px 0 16px; font-size: clamp(38px, 5vw, 68px); line-height: .98; letter-spacing: -.055em; }
+    .hero p { position: relative; z-index: 1; max-width: 760px; margin: 0; font-size: 17px; color: rgba(255,255,255,.78); }
+    .hero-meta { position: relative; z-index: 1; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+    .hero-chip { border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.09); border-radius: 999px; padding: 9px 13px; font-size: 13px; font-weight: 700; }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin: 18px 0 30px; }
+    .metric-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: 0 12px 32px rgba(15,23,32,.045); }
+    .metric-value { font-size: 30px; font-weight: 850; letter-spacing: -.04em; }
+    .metric-label { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+    .section-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow); padding: 30px; margin-bottom: 24px; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 24px; }
+    .section-kicker { color: var(--green-dark); font-size: 12px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .section-head h2 { margin: 7px 0 0; font-size: clamp(26px,3vw,38px); line-height: 1.08; letter-spacing: -.04em; }
+    .section-desc { max-width: 560px; color: var(--muted); font-size: 14px; }
+
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .scope-card { border: 1px solid var(--line); border-radius: 18px; padding: 20px; background: #fff; }
+    .scope-icon { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: #eaf8f6; color: var(--green-dark); font-weight: 900; }
+    .scope-card h3 { margin: 14px 0 6px; font-size: 18px; }
+    .scope-card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .abbr-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-top: 20px; }
+    .abbr { text-align: center; border: 1px solid var(--line); border-radius: 14px; padding: 14px 8px; background: #fbfcfc; }
+    .abbr strong { display: block; font-size: 18px; color: var(--navy); }
+    .abbr span { font-size: 12px; color: var(--muted); }
+
+    .case-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .case-card { border: 1px solid var(--line); border-radius: 18px; padding: 20px; background: #fff; cursor: pointer; transition: .2s ease; }
+    .case-card:hover, .case-card.active { border-color: rgba(0,168,143,.42); box-shadow: 0 14px 30px rgba(0,168,143,.09); transform: translateY(-2px); }
+    .case-card.active { background: linear-gradient(180deg,#f6fffd,#ffffff); }
+    .case-card .tag { display: inline-flex; padding: 6px 9px; border-radius: 999px; background: #eef2f4; font-size: 11px; font-weight: 800; color: var(--muted); }
+    .case-card h3 { margin: 12px 0 4px; font-size: 18px; }
+    .case-card p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 18px; }
+    .tab-btn { border: 1px solid var(--line); background: white; border-radius: 999px; padding: 10px 15px; cursor: pointer; font-weight: 750; color: #4c5964; }
+    .tab-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fade .22s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+    .process-list { display: grid; gap: 12px; }
+    .process-row { display: grid; grid-template-columns: 64px 1.15fr 1fr 1.15fr 100px 95px; gap: 12px; align-items: stretch; }
+    .process-step { border: 1px solid var(--line); border-radius: 15px; background: white; padding: 14px; min-width: 0; }
+    .process-step.num { display: grid; place-items: center; font-size: 18px; font-weight: 850; color: white; background: linear-gradient(135deg,var(--navy),var(--green-dark)); border: none; }
+    .cell-label { display: block; font-size: 10px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; color: #91a0aa; margin-bottom: 5px; }
+    .process-step strong { font-size: 13px; line-height: 1.35; display: block; }
+    .owner-adm { color: #8b5d00; }
+    .owner-gsm { color: var(--green-dark); }
+    .sla { font-size: 14px !important; color: var(--navy); }
+    .criteria { grid-column: 2 / -1; margin-top: -4px; padding: 10px 14px; border-left: 3px solid var(--yellow); background: #fffbef; border-radius: 0 10px 10px 0; font-size: 12px; color: #6b5a24; }
+
+    .notice-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+    .notice { border-radius: 16px; padding: 16px; background: #f5f8fa; border: 1px solid var(--line); }
+    .notice strong { display: block; font-size: 14px; }
+    .notice span { display: block; color: var(--muted); font-size: 12px; margin-top: 5px; }
+
+    .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 16px; background: white; }
+    table { width: 100%; border-collapse: collapse; min-width: 860px; }
+    th, td { text-align: left; vertical-align: top; padding: 15px 16px; border-bottom: 1px solid var(--line); font-size: 13px; }
+    th { position: sticky; top: 0; z-index: 1; background: #f0f4f6; color: #42505b; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { font-weight: 750; color: var(--navy); }
+
+    .appendix-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+    .doc-card { border: 1px solid var(--line); border-radius: 16px; padding: 18px; background: white; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+    .doc-card h3 { margin: 0 0 4px; font-size: 16px; }
+    .doc-card p { margin: 0; color: var(--muted); font-size: 12px; }
+    .doc-state { white-space: nowrap; border-radius: 999px; padding: 7px 10px; background: #f2f4f5; color: #6b7780; font-size: 11px; font-weight: 800; }
+
+    .footer { padding: 8px 4px 30px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 16px; }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 220px minmax(0,1fr); gap: 20px; padding: 22px; }
+      .process-row { grid-template-columns: 52px 1fr 1fr; }
+      .process-step:nth-child(5), .process-step:nth-child(6) { grid-column: auto; }
+      .criteria { grid-column: 2 / -1; }
+      .metrics { grid-template-columns: repeat(2,1fr); }
+    }
+
+    @media (max-width: 820px) {
+      .topbar-inner { padding: 10px 16px; }
+      .status-pill { display: none; }
+      .icon-btn { display: inline-flex; }
+      .layout { display: block; padding: 16px; }
+      .sidebar { position: fixed; z-index: 80; left: 14px; right: 14px; top: 78px; transform: translateY(-120%); opacity: 0; pointer-events: none; transition: .25s ease; }
+      .sidebar.open { transform: none; opacity: 1; pointer-events: auto; }
+      .hero { padding: 30px 24px; min-height: 320px; border-radius: 24px; }
+      .metrics, .scope-grid, .case-selector, .appendix-grid, .notice-grid { grid-template-columns: 1fr; }
+      .section-card { padding: 22px 18px; border-radius: 20px; }
+      .section-head { display: block; }
+      .section-desc { margin-top: 10px; }
+      .abbr-grid { grid-template-columns: repeat(2,1fr); }
+      .process-row { grid-template-columns: 44px 1fr; gap: 8px; }
+      .process-step:not(.num), .criteria { grid-column: 2; }
+      .criteria { margin-top: -2px; }
+      .footer { display: block; }
+    }
+
+    @media (max-width: 520px) {
+      .brand-sub { display: none; }
+      .brand-title { font-size: 13px; }
+      .hero h1 { font-size: 38px; }
+      .hero p { font-size: 15px; }
+      .metric-card { padding: 16px; }
+      .metric-value { font-size: 25px; }
+      .tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+      .tab-btn { white-space: nowrap; }
+    }
+
+    @media print {
+      .topbar, .sidebar, .top-actions { display: none !important; }
+      body { background: white; }
+      .layout { display: block; max-width: none; padding: 0; }
+      .section-card, .hero { break-inside: avoid; box-shadow: none; }
+      .tab-panel { display: block !important; }
+      .tabs { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div class="brand-text">
+          <div class="brand-title">GREEN SM ADS × ADMICRO</div>
+          <div class="brand-sub">Operation Hub · Phối hợp vận hành HĐQC 2026</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="status-pill"><span class="status-dot"></span> Quy trình đã thống nhất</div>
+        <button class="icon-btn" id="menuBtn" aria-label="Mở điều hướng">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="side-label">Điều hướng</div>
+      <nav class="side-nav">
+        <a href="#overview" class="active"><span class="nav-num">01</span>Tổng quan</a>
+        <a href="#workflow"><span class="nav-num">02</span>Quy trình phối hợp</a>
+        <a href="#rules"><span class="nav-num">03</span>Quy định hợp tác</a>
+        <a href="#exceptions"><span class="nav-num">04</span>Xử lý ngoại lệ</a>
+        <a href="#appendix"><span class="nav-num">05</span>Phụ lục</a>
+      </nav>
+      <div class="sidebar-note">
+        <strong>Bộ phận phụ trách</strong>
+        <span>VHQC · Green SM Ads</span>
+      </div>
+    </aside>
+
+    <main>
+      <section class="hero" id="overview">
+        <div class="eyebrow">Operation Hub · 2026</div>
+        <h1>Phối hợp vận hành<br>Admicro × Green SM Ads</h1>
+        <p>Thống nhất cơ chế phối hợp đối với toàn bộ hợp đồng quảng cáo năm 2026, xác lập rõ vai trò và trách nhiệm của mỗi bên từ điều kiện hợp tác, nội dung quảng cáo, ký hợp đồng đến vận hành và nghiệm thu.</p>
+        <div class="hero-meta">
+          <span class="hero-chip">Online & Offline</span>
+          <span class="hero-chip">2 trường hợp khách hàng</span>
+          <span class="hero-chip">SLA theo từng bước</span>
+        </div>
+      </section>
+
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-value">02</div><div class="metric-label">Trường hợp phân bổ khách hàng</div></div>
+        <div class="metric-card"><div class="metric-value">Online</div><div class="metric-label">Ứng dụng GSM, Merchant, Driver, VinBus</div></div>
+        <div class="metric-card"><div class="metric-value">Offline</div><div class="metric-label">GSM Car, GSM Bike, VinBus, trạm chờ Bus</div></div>
+        <div class="metric-card"><div class="metric-value">2026</div><div class="metric-label">Phạm vi áp dụng toàn bộ HĐQC</div></div>
+      </div>
+
+      <section class="section-card">
+        <div class="section-head">
+          <div><div class="section-kicker">I. Quy trình</div><h2>Mục đích và phạm vi áp dụng</h2></div>
+          <div class="section-desc">Operation Hub chỉ tái cấu trúc cách hiển thị; nội dung nghiệp vụ, SLA và trách nhiệm được giữ nguyên theo tài liệu hai bên đã thống nhất.</div>
+        </div>
+        <div class="scope-grid">
+          <article class="scope-card">
+            <div class="scope-icon">ON</div>
+            <h3>Hệ sinh thái QC Online</h3>
+            <p>Vị trí quảng cáo trong các ứng dụng GSM, GSM Merchant, GSM Driver và VinBus.</p>
+          </article>
+          <article class="scope-card">
+            <div class="scope-icon">OFF</div>
+            <h3>Hệ sinh thái QC Offline</h3>
+            <p>Vị trí quảng cáo trên GSM Car, GSM Bike, VinBus và hệ thống trạm chờ Bus.</p>
+          </article>
+        </div>
+        <div class="abbr-grid">
+          <div class="abbr"><strong>ADM</strong><span>Admicro</span></div>
+          <div class="abbr"><strong>GSM</strong><span>Green SM</span></div>
+          <div class="abbr"><strong>KH</strong><span>Khách hàng</span></div>
+          <div class="abbr"><strong>QC</strong><span>Quảng cáo</span></div>
+          <div class="abbr"><strong>HĐ</strong><span>Hợp đồng</span></div>
+        </div>
+      </section>
+
+      <section class="section-card" id="workflow">
+        <div class="section-head">
+          <div><div class="section-kicker">4. Quy trình phối hợp</div><h2>Phân bổ trường hợp khách hàng</h2></div>
+          <div class="section-desc">Chọn trường hợp để xem đúng luồng vận hành, đơn vị chịu trách nhiệm, SLA và tiêu chí hoàn thành.</div>
+        </div>
+
+        <div class="case-selector">
+          <article class="case-card active" data-case="adm">
+            <span class="tag">Trường hợp 1</span>
+            <h3>KH do Sales ADM tiếp cận</h3>
+            <p>Ký thông qua ADM · Có quy trình riêng cho HĐ QC Online và Offline.</p>
+          </article>
+          <article class="case-card" data-case="gsm">
+            <span class="tag">Trường hợp 2</span>
+            <h3>KH do Sales GSM tiếp cận</h3>
+            <p>Ký thông qua ADM · GSM khai thác thông tin và triển khai chiến dịch.</p>
+          </article>
+        </div>
+
+        <div id="case-adm" class="case-content">
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="online">4.2.1 · HĐ QC Online</button>
+            <button class="tab-btn" data-tab="offline">4.2.2 · HĐ QC Offline</button>
+          </div>
+
+          <div class="tab-panel active" id="tab-online">
+            <div class="process-list">
+              <div class="process-row"><div class="process-step num">01</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Điều kiện hợp tác</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Brief KH</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Khai thác thông tin KH → Thông tin KH, dự án</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-adm">ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">Tùy dự án/KH</strong></div><div class="criteria">Tiêu chí hoàn thành: Brief đủ thông tin.</div></div>
+              <div class="process-row"><div class="process-step num">02</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Điều kiện hợp tác</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Thông tin KH, dự án</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Thẩm định hồ sơ → Xác nhận đủ điều kiện</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">2 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo đủ điều kiện.</div></div>
+              <div class="process-row"><div class="process-step num">03</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Xây dựng kế hoạch</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Brief đã được phê duyệt</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Lập kế hoạch QC → Kế hoạch QC hoàn thiện</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-adm">ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">2 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: KH xác nhận.</div></div>
+              <div class="process-row"><div class="process-step num">04</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Ký HĐ</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Kế hoạch QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Ký HĐ sau khi nhận đủ hồ sơ → HĐ có hiệu lực</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong>GSM/ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">7 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: HĐ đã ký.</div></div>
+              <div class="process-row"><div class="process-step num">05</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Xây dựng nội dung QC</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Yêu cầu nội dung QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Xây dựng nội dung QC → Nội dung QC hoàn thiện</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-adm">ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">2 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo hoàn thiện.</div></div>
+              <div class="process-row"><div class="process-step num">06</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Phê duyệt QC</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Nội dung QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Kiểm duyệt → Phê duyệt nội dung QC</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">3 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Phê duyệt.</div></div>
+              <div class="process-row"><div class="process-step num">07</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Set-up & Go-live</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Nội dung QC được phê duyệt</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Booking QC → Set-up/Go-live QC</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">5–10 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: QC hiển thị.</div></div>
+              <div class="process-row"><div class="process-step num">08</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Theo dõi & Tối ưu</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Chiến dịch đã được go-live</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Theo dõi & Tối ưu → Chiến dịch được tối ưu và đảm bảo KPI</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">Tùy dự án</strong></div><div class="criteria">Tiêu chí hoàn thành: Đạt KPI.</div></div>
+              <div class="process-row"><div class="process-step num">09</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Nghiệm thu</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>QC kết thúc</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Đối soát → Biên bản nghiệm thu</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong>GSM/ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">5 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo xác nhận.</div></div>
+            </div>
+            <div class="notice-grid">
+              <div class="notice"><strong>QC Online tiêu chuẩn</strong><span>Từ duyệt nội dung QC đến khi chiến dịch diễn ra: 5 ngày.</span></div>
+              <div class="notice"><strong>Có tracking/deeplink/QR/UTM/Targeting</strong><span>Từ duyệt nội dung QC đến khi chiến dịch diễn ra: 7 ngày.</span></div>
+              <div class="notice"><strong>Ngành hàng nhạy cảm/cần hồ sơ pháp lý</strong><span>Từ duyệt nội dung QC đến khi chiến dịch diễn ra: 10 ngày.</span></div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="tab-offline">
+            <div class="process-list">
+              <div class="process-row"><div class="process-step num">01</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Điều kiện hợp tác</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Brief KH</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Khai thác thông tin KH → Thông tin KH, dự án</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-adm">ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">Tùy dự án/KH</strong></div><div class="criteria">Tiêu chí hoàn thành: Brief đủ thông tin.</div></div>
+              <div class="process-row"><div class="process-step num">02</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Điều kiện hợp tác</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Thông tin KH, dự án</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Thẩm định hồ sơ → Xác nhận đủ điều kiện</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">2 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo đủ điều kiện.</div></div>
+              <div class="process-row"><div class="process-step num">03</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Xây dựng kế hoạch</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Brief đã được phê duyệt</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Lập kế hoạch QC → Kế hoạch QC hoàn thiện</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-adm">ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">2 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: KH xác nhận.</div></div>
+              <div class="process-row"><div class="process-step num">04</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Ký HĐ</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Kế hoạch QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Ký HĐ sau khi nhận đủ hồ sơ → HĐ có hiệu lực</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong>GSM/ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">7 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: HĐ đã ký.</div></div>
+              <div class="process-row"><div class="process-step num">05</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Xây dựng nội dung QC</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Yêu cầu nội dung QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Xây dựng tư liệu QC → Mockup/File in ấn/Vật phẩm</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-adm">ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">3 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo hoàn thiện.</div></div>
+              <div class="process-row"><div class="process-step num">06</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Phê duyệt QC</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Nội dung QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Kiểm duyệt → Phê duyệt nội dung QC</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">2 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Phê duyệt.</div></div>
+              <div class="process-row"><div class="process-step num">07</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Sản xuất & Điều phối</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Nội dung QC được phê duyệt</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Thi công & Điều phối → Nội dung QC đã được thi công</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">6–14 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo hoàn thiện.</div></div>
+              <div class="process-row"><div class="process-step num">08</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Triển khai chiến dịch</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Phương tiện được gắn QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Triển khai QC → Phương tiện được gắn QC di chuyển</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">1 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: QC hiển thị.</div></div>
+              <div class="process-row"><div class="process-step num">09</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Theo dõi & Tối ưu</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Chiến dịch đã được go-live</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Theo dõi & Tối ưu → Chiến dịch được tối ưu và đảm bảo KPI</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">Tùy dự án</strong></div><div class="criteria">Tiêu chí hoàn thành: Đạt KPI.</div></div>
+              <div class="process-row"><div class="process-step num">10</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Nghiệm thu</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>QC kết thúc</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Đối soát → Biên bản nghiệm thu</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong>GSM/ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">5 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo xác nhận.</div></div>
+            </div>
+            <div class="notice-grid">
+              <div class="notice"><strong>QC Offline đơn giản</strong><span>Từ duyệt nội dung QC đến khi chiến dịch diễn ra: 7 ngày.</span></div>
+              <div class="notice"><strong>Sampling/phát quà/roadshow</strong><span>Hoạt động cần tài xế hoặc depot: 15 ngày từ duyệt nội dung QC đến khi chiến dịch diễn ra.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="case-gsm" class="case-content" hidden>
+          <div class="tabs"><button class="tab-btn active">4.3 · KH do Sales GSM tiếp cận</button></div>
+          <div class="process-list">
+            <div class="process-row"><div class="process-step num">01</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Điều kiện hợp tác</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Brief KH</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Khai thác thông tin KH → Thông tin KH, dự án</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">Tùy dự án/KH</strong></div><div class="criteria">Tiêu chí hoàn thành: Brief đủ thông tin.</div></div>
+            <div class="process-row"><div class="process-step num">02</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Điều kiện hợp tác</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Thông tin KH, dự án</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Thẩm định hồ sơ → Xác nhận đủ điều kiện</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-adm">ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">2 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo đủ điều kiện.</div></div>
+            <div class="process-row"><div class="process-step num">03</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Ký HĐ</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Kế hoạch QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Ký HĐ sau khi nhận đủ hồ sơ → HĐ có hiệu lực</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong>GSM/ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">7 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: HĐ đã ký.</div></div>
+            <div class="process-row"><div class="process-step num">04</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Phê duyệt QC (nếu có)</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Nội dung QC</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Kiểm duyệt → Phê duyệt nội dung QC</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-adm">ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">2 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: Thông báo hoàn thiện.</div></div>
+            <div class="process-row"><div class="process-step num">05</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Triển khai chiến dịch</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>Nội dung QC được phê duyệt/thi công</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Triển khai QC → Set-up/Go-live phương tiện/in-app</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong class="owner-gsm">GSM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">Tùy dự án/KH</strong></div><div class="criteria">Tiêu chí hoàn thành: QC hiển thị/gắn trên phương tiện.</div></div>
+            <div class="process-row"><div class="process-step num">06</div><div class="process-step"><span class="cell-label">Các bước</span><strong>Nghiệm thu</strong></div><div class="process-step"><span class="cell-label">Đầu vào</span><strong>QC kết thúc</strong></div><div class="process-step"><span class="cell-label">Thực hiện / Đầu ra</span><strong>Đối soát → Biên bản nghiệm thu</strong></div><div class="process-step"><span class="cell-label">Đơn vị</span><strong>GSM/ADM</strong></div><div class="process-step"><span class="cell-label">SLA</span><strong class="sla">5 ngày</strong></div><div class="criteria">Tiêu chí hoàn thành: KH xác nhận.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-card" id="rules">
+        <div class="section-head"><div><div class="section-kicker">II. Quy định hợp tác</div><h2>Cách xử lý, escalation và chế tài</h2></div><div class="section-desc">Áp dụng khi hồ sơ, hợp đồng, SLA, nội dung hoặc kế hoạch go-live phát sinh vấn đề.</div></div>
+        <div class="table-wrap"><table><thead><tr><th>Trường hợp</th><th>Cách xử lý</th><th>Escalation</th><th>Áp dụng chế tài</th></tr></thead><tbody>
+          <tr><td>Hồ sơ khách hàng không đáp ứng tiêu chuẩn kiểm duyệt</td><td>GSM thông báo không đủ điều kiện triển khai, dừng SLA. Tạm dừng SLA đến khi cung cấp đủ thông tin (nếu có thêm).</td><td>Quản lý VHQC Green SM Ads</td><td>Tạm dừng toàn bộ SLA trong thời gian chờ.</td></tr>
+          <tr><td>Không thể hoàn thiện HĐ trước ngày diễn ra chiến dịch</td><td>Admicro gửi công văn có đóng dấu mộc về cam kết trách nhiệm và ngày hoàn thiện HĐ sớm nhất.</td><td>Giám đốc Admicro</td><td>Tạm dừng SLA và không giữ chỗ cho QC.</td></tr>
+          <tr><td>Quá hạn SLA</td><td>Thông báo và nhận được sự đồng thuận cho đối tác. Điều chỉnh timeline theo xác nhận hai bên.</td><td>Quá 2 ngày SLA không nhận được phản hồi: Quản lý. Quá 3 ngày SLA không nhận được phản hồi: Giám đốc.</td><td>Tạm dừng SLA tới khi có sự thống nhất và phản hồi từ Quản lý/Giám đốc.</td></tr>
+          <tr><td>KH thay đổi nội dung QC</td><td>Đánh giá ảnh hưởng và cập nhật kế hoạch.</td><td>Nếu có phát sinh về SLA và chi phí: Quản lý.</td><td>Reset/cộng thêm SLA thống nhất và phát sinh chi phí (nếu có).</td></tr>
+          <tr><td>Không Go-live đúng kế hoạch</td><td>Kích hoạt phương án xử lý, trao đổi và thống nhất giữa hai bên.</td><td>Quản lý & Giám đốc</td><td>Điều chỉnh kế hoạch hoặc theo thống nhất.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="section-card" id="exceptions">
+        <div class="section-head"><div><div class="section-kicker">III. Xử lý ngoại lệ</div><h2>Tình huống và điều chỉnh SLA</h2></div><div class="section-desc">SLA được tạm dừng, cộng thêm hoặc reset theo đúng từng tình huống.</div></div>
+        <div class="table-wrap"><table><thead><tr><th>Tình huống</th><th>Cách xử lý</th><th>Điều chỉnh SLA</th></tr></thead><tbody>
+          <tr><td>Thiếu thông tin brief</td><td>Tạm dừng SLA đến khi đủ thông tin.</td><td>-</td></tr>
+          <tr><td>KH không đủ điều kiện QC</td><td>Thông báo bằng văn bản và dừng triển khai.</td><td>2 ngày</td></tr>
+          <tr><td>Nội dung QC không được duyệt</td><td>ADM/KH chỉnh sửa và gửi lại nội dung QC.</td><td>Thêm 1 ngày/lần sửa</td></tr>
+          <tr><td>KH thay đổi nội dung QC trong khi đã triển khai chiến dịch</td><td>Cần thông báo trước khi triển khai chiến dịch để đảm bảo thời gian vận hành và tính toán chi phí phát sinh nếu có. Offline: 5–7 ngày trước chiến dịch. Online: 7–10 ngày trước chiến dịch.</td><td>SLA reset hoặc Online: 3 ngày; Offline: 5 ngày.</td></tr>
+          <tr><td>Điều chỉnh SLA</td><td>Thông báo trước và đảm bảo đối tác xác nhận thông tin điều chỉnh SLA.</td><td>4 giờ</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="section-card" id="appendix">
+        <div class="section-head"><div><div class="section-kicker">IV. Phụ lục</div><h2>Danh mục tài liệu liên quan</h2></div><div class="section-desc">Tài liệu nguồn chỉ thể hiện chữ “Link”, chưa cung cấp URL đích; hệ thống không tự tạo liên kết để tránh sai lệch.</div></div>
+        <div class="appendix-grid">
+          <article class="doc-card"><div><h3>Credentials</h3><p>VIE · ENG</p></div><span class="doc-state">Chờ gắn link</span></article>
+          <article class="doc-card"><div><h3>Rate card</h3><p>VIE · ENG</p></div><span class="doc-state">Chờ gắn link</span></article>
+          <article class="doc-card"><div><h3>Creative Asset Guideline</h3><p>Tài liệu hướng dẫn tài sản sáng tạo</p></div><span class="doc-state">Chờ gắn link</span></article>
+          <article class="doc-card"><div><h3>Quy định quảng cáo</h3><p>Tài liệu quy định kiểm duyệt</p></div><span class="doc-state">Chờ gắn link</span></article>
+        </div>
+      </section>
+
+      <footer class="footer"><span>Green SM Ads × Admicro · Operation Hub 2026</span><span>Nội dung bám theo quy trình phối hợp đã thống nhất.</span></footer>
+    </main>
+  </div>
+</div>
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const sidebar = document.getElementById('sidebar');
+  menuBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
+  document.querySelectorAll('.side-nav a').forEach(a => a.addEventListener('click', () => sidebar.classList.remove('open')));
+
+  const caseCards = document.querySelectorAll('.case-card');
+  caseCards.forEach(card => card.addEventListener('click', () => {
+    caseCards.forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    const activeCase = card.dataset.case;
+    document.getElementById('case-adm').hidden = activeCase !== 'adm';
+    document.getElementById('case-gsm').hidden = activeCase !== 'gsm';
+  }));
+
+  document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => {
+    const parent = btn.closest('#case-adm');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  }));
+
+  const sections = [...document.querySelectorAll('main section[id]')];
+  const links = [...document.querySelectorAll('.side-nav a')];
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + entry.target.id));
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(section => observer.observe(section));
+</script>
+</body>
+</html>
